@@ -11,4 +11,3 @@ resource Pip 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
 }
 
 output id string = Pip.id
-output ipAddress string = Pip.properties.ipAddress

@@ -137,7 +137,7 @@ module hubLng 'modules/Lng.bicep' = if (deployOnpremiseInfra) {
     location: hubandspokesLocation
     asn: onpremAsn
     bgpPeeringAddress: onpremVnetGw.outputs.bgpPeeringAddress
-    gatewayIpAddress: onpremVnetGwPip.outputs.ipAddress
+    gatewayIpAddress: onpremVnetGw.outputs.ipAddress
   }
 }
 
@@ -387,7 +387,7 @@ module onpremLng 'modules/Lng.bicep' = if (deployOnpremiseInfra) {
     location: onpremLocation
     asn: hubAsn
     bgpPeeringAddress: hubVnetGw.outputs.bgpPeeringAddress
-    gatewayIpAddress: hubVnetGwPip.outputs.ipAddress
+    gatewayIpAddress: hubVnetGw.outputs.ipAddress
   }
 }
 
