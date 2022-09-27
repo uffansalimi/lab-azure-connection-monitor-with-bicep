@@ -20,7 +20,7 @@ In addition to this hub & spoke, on-premise & S2S VPN, Bicep code will create Az
 # Select subscription
 az account set -s "....."
 # Deploy infrastructure
-az deployment sub create --template-file main.bicep --location centralindia
+az deployment sub create --template-file main.bicep --location westeurope
 ``` 
 
 * Azure Portal - Navigate to Network Watcher => Connection Monitor:

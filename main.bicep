@@ -5,7 +5,7 @@ targetScope = 'subscription'
 param deployOnpremiseInfra bool = true
 
 // Hub and Spokes parameters
-param hubandspokesLocation string = 'centralindia'
+param hubandspokesLocation string = 'westeurope'
 
 param hubRgName string = 'rg-hub'
 param hubVnetName string = 'vnet-hub'
@@ -51,7 +51,7 @@ param spoke02VnetSubnets array = [
 ]
 
 // On-premise parameters
-param onpremLocation string = 'canadacentral'
+param onpremLocation string = 'westeurope'
 param onpremRgName string = 'rg-onpremise'
 param onpremVnetName string = 'vnet-onpremise'
 param onpremVnetAddressSpace string = '10.233.0.0/21'
@@ -113,6 +113,7 @@ module hubVnetGwPip 'modules/Pip.bicep' = if (deployOnpremiseInfra) {
   params:{
     name: 'hubgwpip01'
     location: hubandspokesLocation
+    publicIpPrefixId: publicIpPrefix.outputs.publicIpPrefixId
   }
 }
 
@@ -137,7 +138,8 @@ module hubLng 'modules/Lng.bicep' = if (deployOnpremiseInfra) {
     location: hubandspokesLocation
     asn: onpremAsn
     bgpPeeringAddress: onpremVnetGw.outputs.bgpPeeringAddress
-    gatewayIpAddress: onpremVnetGw.outputs.ipAddress
+    gatewayIpAddress: onpremVnetGwPip.outputs.ipAddress
+    //gatewayIpAddress: onpremVnetGw.outputs.ipAddress
   }
 }
 
@@ -357,12 +359,21 @@ module onpremVnet 'modules/Vnet.bicep' = if (deployOnpremiseInfra) {
   }
 }
 
+module publicIpPrefix 'modules/publicIpPrefix.bicep' = if (deployOnpremiseInfra) {
+  name: 'publicIpPrefix'
+  scope: onpremRg
+  params:{
+    resourceSuffix: '1'
+    location: onpremLocation
+  }
+}
 module onpremVnetGwPip 'modules/Pip.bicep' = if (deployOnpremiseInfra) {
   name: 'onpremVnetGwPip'
   scope: onpremRg
   params:{
     name: 'onpremisegwpip01'
     location: onpremLocation
+    publicIpPrefixId: publicIpPrefix.outputs.publicIpPrefixId
   }
 }
 
@@ -387,7 +398,8 @@ module onpremLng 'modules/Lng.bicep' = if (deployOnpremiseInfra) {
     location: onpremLocation
     asn: hubAsn
     bgpPeeringAddress: hubVnetGw.outputs.bgpPeeringAddress
-    gatewayIpAddress: hubVnetGw.outputs.ipAddress
+    gatewayIpAddress: hubVnetGwPip.outputs.ipAddress
+    //gatewayIpAddress: hubVnetGw.outputs.ipAddress
   }
 }
 
@@ -561,5 +573,52 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
       }
     ]
     workspaceResourceId: networkMonitoringLaw.outputs.WorkspaceResourceId
+  }
+}
+
+module actiongroup 'modules/ActionGroup.bicep' = {
+  name: 'actionGroup'
+  scope: networkMonitoringRg
+  params: {
+    actionGroupName: 'ag-network'
+    actionGroupShortName: 'Networking'
+    emailReceivers: [
+      {
+        name: 'contosoEmail'
+        emailAddress: 'devops@contoso.com'
+        useCommonAlertSchema: true
+      }
+      {
+        name: 'contosoEmail2'
+        emailAddress: 'devops2@contoso.com'
+        useCommonAlertSchema: true
+      }
+    ]
+  }
+}
+
+module metricAlert1 'modules/MetricAlert.bicep' = {
+  name: 'metricAlert1'
+  scope: networkMonitoringRg
+  params: {
+    location: networkMonitoringRgLocation
+    actionGroupId: actiongroup.outputs.actionGroupId
+    alertsName: 'Network Checks Failing'
+    description: 'Network checks failing above 80% threshold '
+    networkWatcherId: networkWatcher.outputs.networkWatcherId
+    criteria: {
+      allOf: [
+        {
+          threshold: 80
+          name: 'Metric1'
+          metricNamespace: 'Microsoft.Network/networkWatchers/connectionMonitors'
+          metricName: 'ChecksFailedPercent'
+          operator: 'GreaterThan'
+          timeAggregation: 'Average'
+          criterionType: 'StaticThresholdCriterion'
+        }
+      ]
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+    }
   }
 }

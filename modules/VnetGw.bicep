@@ -39,4 +39,3 @@ resource vnetGateway 'Microsoft.Network/virtualNetworkGateways@2021-02-01' = {
 
 output bgpPeeringAddress string = vnetGateway.properties.bgpSettings.bgpPeeringAddress
 output id string = vnetGateway.id
-output ipAddress string = vnetGateway.properties.ipConfigurations[0].properties.privateIPAddress
