@@ -492,6 +492,16 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
         type: 'ExternalAddress'
         address: 'http://ident.me'
       }
+      {
+        name: 'ex1'
+        type: 'ExternalAddress'
+        address: 'http://ident.me'
+      }
+      {
+        name: 'ex2'
+        type: 'ExternalAddress'
+        address: 'https://www.bbc.co.uk/'
+      }
     ]
     testConfigurations: [
       {
@@ -517,8 +527,38 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
           ]
         }
       }
+      {
+        name: 'http2'
+        testFrequencySec: 30
+        protocol: 'Http'
+        successThreshold: {
+          checksFailedPercent: 100
+        }
+        httpConfiguration: {
+          method: 'Get'
+          port: 80
+          preferHTTPS: true
+          requestHeaders: []
+          validStatusCodeRanges: [
+            '200'
+          ]
+        }
+      }
     ]
     testGroups: [
+      {
+        name: 'Monitor_HubVM_to_ex__https'
+        disable: false
+        testConfigurations:[
+          'https'
+        ]
+        sources: [
+          'hubVM'
+        ]
+        destinations:[
+          'ex1', 'ex2'
+        ]
+      }
       {
         name: 'Monitor_HubVM_to_Spoke1VM__SSH'
         disable: false
