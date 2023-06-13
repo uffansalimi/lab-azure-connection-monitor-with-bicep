@@ -495,12 +495,17 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
       {
         name: 'ex1'
         type: 'ExternalAddress'
-        address: 'http://ident.me'
+        address: 'http://www.google.co.uk'
       }
       {
         name: 'ex2'
         type: 'ExternalAddress'
-        address: 'https://www.bbc.co.uk/'
+        address: 'https://www.bbc.co.uk'
+      }
+      {
+        name: 'ex3'
+        type: 'ExternalAddress'
+        address: 'https://www.amazon.co.uk'
       }
     ]
     testConfigurations: [
@@ -528,7 +533,7 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
         }
       }
       {
-        name: 'http2'
+        name: 'https'
         testFrequencySec: 30
         protocol: 'Http'
         successThreshold: {
@@ -556,7 +561,7 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
           'hubVM'
         ]
         destinations:[
-          'ex1', 'ex2'
+          'ex1', 'ex2', 'ex3'
         ]
       }
       {
