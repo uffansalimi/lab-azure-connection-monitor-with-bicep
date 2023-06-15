@@ -507,6 +507,11 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
         type: 'ExternalAddress'
         address: 'https://www.amazon.co.uk'
       }
+      {
+        name: 'ex4'
+        type: 'ExternalAddress'
+        address: 'https://www.netflix.co.uk'
+      }
     ]
     testConfigurations: [
       {
