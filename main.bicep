@@ -566,7 +566,7 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
           'hubVM'
         ]
         destinations:[
-          'ex1', 'ex2', 'ex3'
+          'ex1', 'ex2', 'ex3', 'ex4'
         ]
       }
       {
