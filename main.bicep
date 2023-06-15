@@ -500,17 +500,17 @@ module connectionMonitor 'modules/ConnectionMonitor.bicep' = {
       {
         name: 'ex2'
         type: 'ExternalAddress'
-        address: 'https://www.bbc.co.uk'
+        address: 'http://www.bbc.co.uk'
       }
       {
         name: 'ex3'
         type: 'ExternalAddress'
-        address: 'https://www.amazon.co.uk'
+        address: 'http://www.amazon.co.uk'
       }
       {
         name: 'ex4'
         type: 'ExternalAddress'
-        address: 'https://www.netflix.co.uk'
+        address: 'http://www.netflix.co.uk'
       }
     ]
     testConfigurations: [
